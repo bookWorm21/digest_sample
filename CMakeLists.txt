@@ -3,7 +3,7 @@ project(digest_sample CXX)
 
 
 # Adding userver dependency
-find_package(userver COMPONENTS core postgresql QUIET)
+# find_package(userver COMPONENTS core postgresql QUIET)
 if(NOT userver_FOUND)  # Fallback to subdirectory usage
     # Enable userver libraries that are needed in this project
     set(USERVER_FEATURE_POSTGRESQL ON CACHE BOOL "" FORCE)
@@ -42,13 +42,28 @@ add_executable(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_objs)
 
+
+# # Unit Tests
+# add_executable(${PROJECT_NAME}_unittest
+#     src/hello_test.cpp
+# )
+# target_link_libraries(${PROJECT_NAME}_unittest PRIVATE ${PROJECT_NAME}_objs userver::utest)
+# add_google_tests(${PROJECT_NAME}_unittest)
+
+
+# # Benchmarks
+# add_executable(${PROJECT_NAME}_benchmark
+#     src/hello_benchmark.cpp
+# )
+# target_link_libraries(${PROJECT_NAME}_benchmark PRIVATE ${PROJECT_NAME}_objs userver::ubench)
+# add_google_benchmark_tests(${PROJECT_NAME}_benchmark)
+
+
 # Functional Tests
 include(UserverTestsuite)
 
 userver_testsuite_add_simple()
 
-set_tests_properties(testsuite-${PROJECT_NAME} PROPERTIES ENVIRONMENT
-          "SERVER_DIGEST_AUTH_SECRET={\"http_server_digest_auth_secret\": \"some-private-key\"}")
 
 # Install
 include(GNUInstallDirs)

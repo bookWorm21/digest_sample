@@ -1,4 +1,4 @@
-CMAKE_COMMON_FLAGS ?= -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+CMAKE_COMMON_FLAGS ?= -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DUSERVER_FEATURE_PATCH_LIBPQ=OFF
 CMAKE_DEBUG_FLAGS ?= -DUSERVER_SANITIZE='addr ub'
 CMAKE_RELEASE_FLAGS ?=
 NPROCS ?= $(shell nproc)
@@ -34,8 +34,8 @@ build-debug build-release: build-%: build_%/CMakeCache.txt
 # Test
 .PHONY: test-debug test-release
 test-debug test-release: test-%: build-%
-	cmake --build build_$* -j $(NPROCS) --target digest_sample_unittest
-	cmake --build build_$* -j $(NPROCS) --target digest_sample_benchmark
+	# cmake --build build_$* -j $(NPROCS) --target digest_sample_unittest
+	# cmake --build build_$* -j $(NPROCS) --target digest_sample_benchmark
 	cd build_$* && ((test -t 1 && GTEST_COLOR=1 PYTEST_ADDOPTS="--color=yes" ctest -V) || ctest -V)
 	pycodestyle tests
 
