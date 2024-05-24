@@ -2,8 +2,10 @@ worker-threads: 4
 worker-fs-threads: 2
 logger-level: info
 
+testsuite-enabled: false
+
 is-testing: false
 
 server-port: 8080
 
-dbconnection: 'postgresql://pg_service_template_user:password@localhost:5432/pg_service_template_db_1'
+dbconnection: 'postgresql://digest_sample_user:password@localhost:5432/digest_sample_db_1'

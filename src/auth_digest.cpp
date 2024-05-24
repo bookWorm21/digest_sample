@@ -1,10 +1,9 @@
 /// [auth checker declaration]
 #include "auth_digest.hpp"
+#include "queries.hpp"
 #include "user_info.hpp"
 
-#include "sql/queries.hpp"
 
-#include <algorithm>
 #include <optional>
 #include <string_view>
 
@@ -18,7 +17,7 @@
 #include <userver/storages/secdist/component.hpp>
 #include <userver/utils/datetime.hpp>
 
-namespace samples::digest_auth {
+namespace digest_sample {
 
 using UserData = server::handlers::auth::digest::UserData;
 using HA1 = server::handlers::auth::digest::UserData::HA1;
@@ -64,7 +63,7 @@ std::optional<UserData> AuthChecker::FetchUserData(
     const std::string& username) const {
   storages::postgres::ResultSet res =
       pg_cluster_->Execute(storages::postgres::ClusterHostType::kSlave,
-                           uservice_dynconf::sql::kSelectUser, username);
+                           kSelectUser, username);
 
   if (res.IsEmpty()) return std::nullopt;
 
@@ -81,7 +80,7 @@ void AuthChecker::SetUserData(const std::string& username,
                               std::int64_t nonce_count,
                               TimePoint nonce_creation_time) const {
   pg_cluster_->Execute(storages::postgres::ClusterHostType::kMaster,
-                       uservice_dynconf::sql::kUpdateUser, nonce,
+                       kUpdateUser, nonce,
                        storages::postgres::TimePointTz{nonce_creation_time},
                        nonce_count, username);
 }
@@ -91,7 +90,7 @@ void AuthChecker::SetUserData(const std::string& username,
 void AuthChecker::PushUnnamedNonce(std::string nonce) const {
   auto res = pg_cluster_->Execute(
       storages::postgres::ClusterHostType::kMaster,
-      uservice_dynconf::sql::kInsertUnnamedNonce,
+      kInsertUnnamedNonce,
       storages::postgres::TimePointTz{utils::datetime::Now() - nonce_ttl_},
       nonce, storages::postgres::TimePointTz{utils::datetime::Now()});
 }
@@ -102,7 +101,7 @@ std::optional<TimePoint> AuthChecker::GetUnnamedNonceCreationTime(
     const std::string& nonce) const {
   auto res =
       pg_cluster_->Execute(storages::postgres::ClusterHostType::kSlave,
-                           uservice_dynconf::sql::kSelectUnnamedNonce, nonce);
+                           kSelectUnnamedNonce, nonce);
 
   if (res.IsEmpty()) return std::nullopt;
 
@@ -143,4 +142,4 @@ server::handlers::auth::AuthCheckerBasePtr CheckerProxyFactory::operator()(
       context.FindComponent<components::Secdist>().Get());
 }
 
-}  // namespace samples::digest_auth
+}  // namespace digest_sample

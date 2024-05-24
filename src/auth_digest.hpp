@@ -5,7 +5,7 @@
 /// [auth checker factory decl]
 #include <userver/server/handlers/auth/auth_checker_factory.hpp>
 
-namespace samples::digest_auth {
+namespace digest_sample {
 
 class CheckerFactory final
     : public server::handlers::auth::AuthCheckerFactoryBase {
@@ -25,5 +25,5 @@ class CheckerProxyFactory final
       const server::handlers::auth::AuthCheckerSettings&) const override;
 };
 
-}  // namespace samples::digest_auth
+}  // namespace digest_sample
 /// [auth checker factory decl]

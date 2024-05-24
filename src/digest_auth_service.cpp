@@ -14,7 +14,7 @@
 #include <userver/testsuite/testsuite_support.hpp>
 #include <userver/utils/daemon_run.hpp>
 
-namespace samples::digest_auth {
+namespace digest_sample {
 
 /// [request context]
 class Hello final : public server::handlers::HttpHandlerBase {
@@ -31,23 +31,23 @@ class Hello final : public server::handlers::HttpHandlerBase {
 };
 /// [request context]
 
-}  // namespace samples::digest_auth
+}  // namespace digest_sample
 
 /// [auth checker registration]
 int main(int argc, const char* const argv[]) {
   server::handlers::auth::RegisterAuthCheckerFactory(
-      "digest", std::make_unique<samples::digest_auth::CheckerFactory>());
+      "digest", std::make_unique<digest_sample::CheckerFactory>());
   server::handlers::auth::RegisterAuthCheckerFactory(
       "digest-proxy",
-      std::make_unique<samples::digest_auth::CheckerProxyFactory>());
+      std::make_unique<digest_sample::CheckerProxyFactory>());
   /// [auth checker registration]
 
   /// [main]
   const auto component_list =
       components::MinimalServerComponentList()
           .Append<components::Postgres>("auth-database")
-          .Append<samples::digest_auth::Hello>()
-          .Append<samples::digest_auth::Hello>("handler-hello-proxy")
+          .Append<digest_sample::Hello>()
+          .Append<digest_sample::Hello>("handler-hello-proxy")
           .Append<components::TestsuiteSupport>()
           .Append<components::HttpClient>()
           .Append<server::handlers::TestsControl>()
