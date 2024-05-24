@@ -37,9 +37,6 @@ class Hello final : public server::handlers::HttpHandlerBase {
 int main(int argc, const char* const argv[]) {
   server::handlers::auth::RegisterAuthCheckerFactory(
       "digest", std::make_unique<digest_sample::CheckerFactory>());
-  server::handlers::auth::RegisterAuthCheckerFactory(
-      "digest-proxy",
-      std::make_unique<digest_sample::CheckerProxyFactory>());
   /// [auth checker registration]
 
   /// [main]
@@ -47,15 +44,12 @@ int main(int argc, const char* const argv[]) {
       components::MinimalServerComponentList()
           .Append<components::Postgres>("auth-database")
           .Append<digest_sample::Hello>()
-          .Append<digest_sample::Hello>("handler-hello-proxy")
           .Append<components::TestsuiteSupport>()
           .Append<components::HttpClient>()
           .Append<server::handlers::TestsControl>()
           .Append<clients::dns::Component>()
           .Append<components::Secdist>()
           .Append<components::DefaultSecdistProvider>()
-          .Append<server::handlers::auth::digest::AuthCheckerSettingsComponent>(
-              "auth-digest-checker-settings-proxy")
           .Append<
               server::handlers::auth::digest::AuthCheckerSettingsComponent>();
   return utils::DaemonMain(argc, argv, component_list);
