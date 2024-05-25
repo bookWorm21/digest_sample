@@ -257,3 +257,22 @@ async def test_repeated_auth_ignore_nextnonce(service_client):
         '/v1/hello', headers={'Authorization': auth_header},
     )
     assert response.status == 200
+
+@pytest.mark.pgsql('auth', files=['test_data.sql'])
+async def test_authenticate_base_sha256(service_client):
+    response = await service_client.get('/v1/hello')
+    assert response.status == 401
+
+    authentication_header = response.headers['WWW-Authenticate']
+    auth_directives = auth_utils.parse_directives(authentication_header)
+
+    auth_utils.auth_directives_assert(auth_directives)
+
+    challenge = auth_utils.construct_challenge(auth_directives)
+    auth_header = auth_utils.construct_header('username-sha256', 'pswd-sha256', challenge)
+
+    response = await service_client.get(
+        '/v1/hello', headers={'Authorization': auth_header},
+    )
+    assert response.status == 200
+    assert 'Authentication-Info' in response.headers
