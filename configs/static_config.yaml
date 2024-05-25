@@ -38,7 +38,7 @@ components_manager:
         #     dns_resolver: async
         # /// [digest config]
         auth-digest-checker-settings:
-            algorithm: MD5
+            algorithm: SHA-256
             qops:
               - auth
             is-proxy: false
