@@ -49,7 +49,7 @@ components_manager:
 
         secdist: {}                                             # Component that stores configuration of hosts and passwords
         default-secdist-provider:                               # Component that loads configuration of hosts and passwords
-            config: '/home/ink275/repositories/tmp/pg_service_template/secdist.json'             # Values are supposed to be stored in this file
+            config: '/etc/digest_auth/secdist.json'             # Values are supposed to be stored in this file
             missing-ok: false                                   # ... but if the file is missing it is still ok
         # /// [secdist config]
 
