@@ -51,4 +51,8 @@ const userver::storages::postgres::Query kSelectUnnamedNonce{
     "RETURNING creation_time ",
     userver::storages::postgres::Query::Name{"select_unnamed_nonce"}};
 
+const userver::storages::postgres::Query kInsertCreds {
+    "INSERT INTO auth_schema.users(username, nonce, ha1) VALUES "
+    "($1, $2, $3) ",
+    userver::storages::postgres::Query::Name{"insert_user_creds"}};
 }  // namespace digest_sample

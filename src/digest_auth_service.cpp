@@ -1,4 +1,5 @@
 #include "auth_digest.hpp"
+#include "queries.hpp"
 #include "user_info.hpp"
 
 #include <userver/clients/dns/component.hpp>
@@ -31,6 +32,32 @@ class Hello final : public server::handlers::HttpHandlerBase {
 };
 /// [request context]
 
+class AddUserHandler final : public server::handlers::HttpHandlerBase {
+  public:
+   static constexpr std::string_view kName = "handler-add";
+
+   using HttpHandlerBase::HttpHandlerBase;
+   
+   AddUserHandler(const components::ComponentConfig& config,
+                   const components::ComponentContext& context) : HttpHandlerBase(config, context), 
+                   pg_cluster_(context.FindComponent<components::Postgres>("auth-database")
+                        .GetCluster())
+                        {}
+
+   std::string HandleRequestThrow(
+    const server::http::HttpRequest& request,
+    server::request::RequestContext& context) const override {
+      pg_cluster_->Execute(storages::postgres::ClusterHostType::kSlave, kInsertCreds, 
+      "username", 
+      "180aa8fac42262ec881b27dd4df6d2e2",
+      "180aa8fac42262ec881b27dd4df6d2e2");
+      return "Inserting";
+   }
+
+  private:
+   storages::postgres::ClusterPtr pg_cluster_;
+};
+
 }  // namespace digest_sample
 
 /// [auth checker registration]
@@ -51,7 +78,8 @@ int main(int argc, const char* const argv[]) {
           .Append<components::Secdist>()
           .Append<components::DefaultSecdistProvider>()
           .Append<
-              server::handlers::auth::digest::AuthCheckerSettingsComponent>();
+              server::handlers::auth::digest::AuthCheckerSettingsComponent>()
+          .Append<digest_sample::AddUserHandler>();
   return utils::DaemonMain(argc, argv, component_list);
   /// [main]
 }

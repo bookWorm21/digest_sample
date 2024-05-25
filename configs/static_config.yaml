@@ -74,6 +74,11 @@ components_manager:
                   - digest  # Authorization type that was specified in main()
                 realm: registred@userver.com
 
+        handler-add:
+            path: /add
+            method: GET
+            task_processor: main-task-processor
+            
         auth-database:
             dbconnection: $dbconnection
             blocking_task_processor: fs-task-processor
