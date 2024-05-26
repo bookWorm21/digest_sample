@@ -69,10 +69,10 @@ components_manager:
             path: /v1/hello               # Registering handler by URL '/v1/hello'.
             method: GET                  # It will only reply to POST requests.
             task_processor: main-task-processor  # Run it on CPU bound task processor
-            auth:           # Authorization config for this handler
-                types:
-                  - digest  # Authorization type that was specified in main()
-                realm: registred@userver.com
+            # auth:           # Authorization config for this handler
+            #     types:
+            #       - digest  # Authorization type that was specified in main()
+            #     realm: registred@userver.com
 
         handler-add-user:
             path: /add/user
