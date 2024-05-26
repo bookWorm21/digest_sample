@@ -88,7 +88,7 @@ void AuthChecker::SetUserData(const std::string& username,
 void AuthChecker::PushUnnamedNonce(std::string nonce) const {
   auto res = pg_cluster_->Execute(
       storages::postgres::ClusterHostType::kMaster, kInsertUnnamedNonce,
-      storages::postgres::TimePointTz{utils::datetime::Now() - nonce_ttl_},
+      storages::postgres::TimePointTz{utils::datetime::Now() - std::chrono::milliseconds(10000)},
       nonce, storages::postgres::TimePointTz{utils::datetime::Now()});
 }
 /// [auth checker definition 3]
