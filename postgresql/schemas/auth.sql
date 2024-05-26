@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS auth_schema.users (
     ha1 TEXT NOT NULL,
     PRIMARY KEY(username)
 );
+CREATE INDEX users_username_index ON auth_schema.users (username);
 
 CREATE TABLE IF NOT EXISTS auth_schema.unnamed_nonce (
     id uuid NOT NULL,
@@ -21,4 +22,5 @@ CREATE TABLE IF NOT EXISTS auth_schema.unnamed_nonce (
     PRIMARY KEY(id),
     UNIQUE(nonce)
 );
+CREATE INDEX unnamed_nonce_time_index ON auth_schema.unnamed_nonce (creation_time);
 /* /// [postgresql schema] */

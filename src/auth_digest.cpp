@@ -3,7 +3,6 @@
 #include "queries.hpp"
 #include "user_info.hpp"
 
-
 #include <optional>
 #include <string_view>
 
@@ -61,9 +60,8 @@ class AuthChecker final
 /// [auth checker definition 1]
 std::optional<UserData> AuthChecker::FetchUserData(
     const std::string& username) const {
-  storages::postgres::ResultSet res =
-      pg_cluster_->Execute(storages::postgres::ClusterHostType::kSlave,
-                           kSelectUser, username);
+  storages::postgres::ResultSet res = pg_cluster_->Execute(
+      storages::postgres::ClusterHostType::kSlave, kSelectUser, username);
 
   if (res.IsEmpty()) return std::nullopt;
 
@@ -89,8 +87,7 @@ void AuthChecker::SetUserData(const std::string& username,
 /// [auth checker definition 3]
 void AuthChecker::PushUnnamedNonce(std::string nonce) const {
   auto res = pg_cluster_->Execute(
-      storages::postgres::ClusterHostType::kMaster,
-      kInsertUnnamedNonce,
+      storages::postgres::ClusterHostType::kMaster, kInsertUnnamedNonce,
       storages::postgres::TimePointTz{utils::datetime::Now() - nonce_ttl_},
       nonce, storages::postgres::TimePointTz{utils::datetime::Now()});
 }
@@ -99,9 +96,8 @@ void AuthChecker::PushUnnamedNonce(std::string nonce) const {
 /// [auth checker definition 4]
 std::optional<TimePoint> AuthChecker::GetUnnamedNonceCreationTime(
     const std::string& nonce) const {
-  auto res =
-      pg_cluster_->Execute(storages::postgres::ClusterHostType::kSlave,
-                           kSelectUnnamedNonce, nonce);
+  auto res = pg_cluster_->Execute(storages::postgres::ClusterHostType::kSlave,
+                                  kSelectUnnamedNonce, nonce);
 
   if (res.IsEmpty()) return std::nullopt;
 

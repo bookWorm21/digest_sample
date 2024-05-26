@@ -31,6 +31,7 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/auth_digest.cpp
     src/auth_digest.cpp
     src/queries.hpp
+    src/add_user_service.hpp
 )
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver::postgresql)
 

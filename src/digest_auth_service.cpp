@@ -1,4 +1,5 @@
 #include "auth_digest.hpp"
+#include "add_user_service.hpp"
 #include "queries.hpp"
 #include "user_info.hpp"
 
@@ -32,30 +33,30 @@ class Hello final : public server::handlers::HttpHandlerBase {
 };
 /// [request context]
 
-class AddUserHandler final : public server::handlers::HttpHandlerBase {
-  public:
-   static constexpr std::string_view kName = "handler-add";
+class AddDefaultUserHandler final : public server::handlers::HttpHandlerBase {
+ public:
+  static constexpr std::string_view kName = "handler-add-default-user";
 
-   using HttpHandlerBase::HttpHandlerBase;
-   
-   AddUserHandler(const components::ComponentConfig& config,
-                   const components::ComponentContext& context) : HttpHandlerBase(config, context), 
-                   pg_cluster_(context.FindComponent<components::Postgres>("auth-database")
-                        .GetCluster())
-                        {}
+  using HttpHandlerBase::HttpHandlerBase;
 
-   std::string HandleRequestThrow(
-    const server::http::HttpRequest& request,
-    server::request::RequestContext& context) const override {
-      pg_cluster_->Execute(storages::postgres::ClusterHostType::kSlave, kInsertCreds, 
-      "username-sha256", 
-      "some-old-nonce",
-      "88569f704e305126abe6afb3c6051405bb99852f332a768686bb6502ffe1667a");
-      return "Inserting";
-   }
+  AddDefaultUserHandler(const components::ComponentConfig& config,
+                        const components::ComponentContext& context)
+      : HttpHandlerBase(config, context),
+        pg_cluster_(context.FindComponent<components::Postgres>("auth-database")
+                        .GetCluster()) {}
 
-  private:
-   storages::postgres::ClusterPtr pg_cluster_;
+  std::string HandleRequestThrow(
+      const server::http::HttpRequest& request,
+      server::request::RequestContext& context) const override {
+    pg_cluster_->Execute(
+        storages::postgres::ClusterHostType::kSlave, kInsertCreds,
+        "username-sha256", "some-old-nonce",
+        "88569f704e305126abe6afb3c6051405bb99852f332a768686bb6502ffe1667a");
+    return "Inserting";
+  }
+
+ private:
+  storages::postgres::ClusterPtr pg_cluster_;
 };
 
 }  // namespace digest_sample
@@ -79,6 +80,7 @@ int main(int argc, const char* const argv[]) {
           .Append<components::DefaultSecdistProvider>()
           .Append<
               server::handlers::auth::digest::AuthCheckerSettingsComponent>()
+          .Append<digest_sample::AddDefaultUserHandler>()
           .Append<digest_sample::AddUserHandler>();
   return utils::DaemonMain(argc, argv, component_list);
   /// [main]
